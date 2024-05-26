@@ -1,6 +1,6 @@
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-
+const zod = require('zod');
 
 module.exports.signUp = async (req, res)=>
 {
@@ -22,6 +22,7 @@ module.exports.signUp = async (req, res)=>
     catch (error) 
     {
         console.log(error);
+        return res.status(411).json({ message : error.message });  
     }
 }
 
@@ -71,5 +72,64 @@ module.exports.protect = async (req, res, next) =>
     catch (error) 
     {
         console.log(error);
+    }
+}
+
+module.exports.updatePassword = async (req, res)=>
+{
+    try 
+    {
+        //Get user from collection
+        const user = await User.findById(req.user.id).select('+password');
+    
+        //check if posted current password is valid
+        const isMatch = await user.comparePassword(req.body.passwordCurrent, user.password);
+
+        if(!isMatch)
+        {
+            return res.status(401).json({ message : "Invalid login credentials" });
+        }
+
+        //if so update password
+    
+        user.password = req.body.password;
+        user.passwordConfirm = req.body.passwordConfirm;
+        await user.save();
+
+        const token = user.getToken();
+
+        return res.status(200).json({ message : "User password updated successfully", token  });
+    } 
+    catch (error) 
+    {
+        console.log(error);
+        return res.status(411).json({ message : error.message }); 
+    }
+}
+
+const updateBody = zod.object(
+{
+    firstname: zod.string().optional(),
+    lastname: zod.string().optional()
+});
+
+module.exports.updateUser = async (req, res)=>
+{
+    try 
+    {
+        const { success } = updateBody.safeParse(req.body);
+        if(!success)
+        {
+            return res.status(411).json({ message : "Error while updating user"  });
+        }
+        
+        await User.updateOne(req.body, { id : req.user.id });
+
+        return res.status(200).json({ message : "User updated successfully"  });
+    } 
+    catch (error) 
+    {
+        console.log(error);
+        return res.status(411).json({ message : error.message }); 
     }
 }
