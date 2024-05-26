@@ -133,3 +133,26 @@ module.exports.updateUser = async (req, res)=>
         return res.status(411).json({ message : error.message }); 
     }
 }
+
+
+module.exports.getUsers = async (req, res)=>
+{
+    try 
+    {
+        const filter = req.query.filter || "";
+        const users = await User.find({
+            $or: [
+              { firstname: { "$regex": filter, "$options": "i" } },
+              { lastname: { "$regex": filter, "$options": "i" } }
+            ]
+          }).select('firstname lastname username _id');
+
+        return res.status(200).json({ message : "Users fetched successfully", users  });
+
+    } 
+    catch (error) 
+    {
+        console.log(error);
+        return res.status(411).json({ message : error.message });
+    }
+}

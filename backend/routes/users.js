@@ -10,4 +10,6 @@ router.patch('/updateMyPassword', userController.protect, userController.updateP
 
 router.patch('/', userController.protect, userController.updateUser);
 
+router.get('/bulk', userController.getUsers);
+
 module.exports = router;
