@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const bankSchema = new mongoose.Schema(
+const accountSchema = new mongoose.Schema(
 {
     userID:
     {
@@ -19,6 +19,6 @@ const bankSchema = new mongoose.Schema(
 });
 
 
-const Bank = mongoose.model('Bank', bankSchema);
+const Account = mongoose.model('Account', accountSchema);
 
-module.exports = Bank;
+module.exports = Account;

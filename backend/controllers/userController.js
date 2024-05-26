@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Account = require('../models/account');
 const jwt = require('jsonwebtoken');
 const zod = require('zod');
 
@@ -12,6 +13,12 @@ module.exports.signUp = async (req, res)=>
             password, 
             firstname: req.body.firstname,
             lastname: req.body.lastname
+        });
+
+        await Account.create(
+        {
+            userID: user.id,
+            balance: 1 + Math.random() * 10000
         });
 
         const token = user.getToken();
