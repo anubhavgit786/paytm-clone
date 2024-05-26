@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema(
     timestamps: true
 });
 
+let x = 2;
 
 const User = mongoose.model('User', userSchema);
 
