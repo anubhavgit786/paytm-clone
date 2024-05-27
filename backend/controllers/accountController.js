@@ -20,31 +20,32 @@ module.exports.transferBalance = async (req, res) =>
     try 
     {
         const session = await mongoose.startSession();
+        
+        session.startTransaction();
         const { amount, to } = req.body;
         
-        //Fetch the accounts within the transaction
+        // Fetch the accounts within the transaction
+        const account = await Account.findOne({ userId: req.userId }).session(session);
 
-        const account = await Account.findOne({ userID: req.user.id }).session(session);
-
-        if(!account || account.balance < amount)
+        if (!account || account.balance < amount) 
         {
             await session.abortTransaction();
-            return res.status(400).json({ message : "Insufficient Balance" });
+            return res.status(400).json({ message: "Insufficient balance" });
         }
 
-        const toAccount = await Account.findOne({ userID: to }).session(session);
+        const toAccount = await Account.findOne({ userId: to }).session(session);
 
-        if(!toAccount)
+        if (!toAccount) 
         {
             await session.abortTransaction();
-            return res.status(400).json({ message : "Invalid Account" });
+            return res.status(400).json({ message: "Invalid account" });
         }
 
-        //Perform the transaction
-        await Account.updateOne({ userID: req.user.id }, { $inc : { balance: -amount }}).session(session);
-        await Account.updateOne({ userID: to }, { $inc : { balance: amount }}).session(session);
+        // Perform the transfer
+        await Account.updateOne({ userId: req.userId }, { $inc: { balance: -amount } }).session(session);
+        await Account.updateOne({ userId: to }, { $inc: { balance: amount } }).session(session);
 
-        //Commit the transaction
+        // Commit the transaction
         await session.commitTransaction();
 
         return res.status(200).json({ message : "Transferred successfully" });
