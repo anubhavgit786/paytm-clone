@@ -101,6 +101,20 @@ userSchema.methods.getToken = function()
     return token;
 }
 
+//Instance method
+userSchema.methods.comparePassword = async function(candidatePassword, actualHashedPassword)  
+{
+    try 
+    {
+        const isMatch = await bcrypt.compare(candidatePassword, actualHashedPassword);
+        return isMatch;
+    } 
+    catch (error) 
+    {
+        throw error;   
+    }
+}
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

@@ -10,7 +10,8 @@ module.exports.signUp = async (req, res)=>
         const user = await User.create(
         {
             username: req.body.username,
-            password, 
+            password: req.body.password,
+            passwordConfirm: req.body.passwordConfirm,
             firstname: req.body.firstname,
             lastname: req.body.lastname
         });
