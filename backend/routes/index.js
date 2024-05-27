@@ -5,9 +5,9 @@ const router = express.Router();
 console.log('router loaded');
 
 
-router.use('/users', require('./users'));
-//router.use('/tours', require('./tours'));
-//router.use('/reviews', require('./reviews'));
+router.use('/user', require('./users'));
+router.use('/account', require('./account'));
+
 
 
 module.exports = router;
